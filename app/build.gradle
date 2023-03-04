@@ -1,0 +1,158 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.huawei.agconnect'
+
+android {
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
+    flavorDimensions "mode"
+    productFlavors{
+        hms{
+            dimension "mode"
+        }
+        gms{
+            dimension "mode"
+        }
+    }
+
+    defaultConfig {
+        minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
+        targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
+        multiDexEnabled true
+        applicationId globalConfiguration.getAt("androidApplicationId")
+        versionCode globalConfiguration.getAt("androidVersionCode")
+        versionName globalConfiguration.getAt("androidVersionName")
+        testInstrumentationRunner globalConfiguration.getAt("testInstrumentationRunner")
+        testApplicationId globalConfiguration.getAt("androidTestApplicationId")
+        vectorDrawables.useSupportLibrary = globalConfiguration.getAt("useSupportLibrary")
+        versionCode 8
+        versionName "1.5"
+    }
+
+    signingConfigs {
+        release {
+
+            storePassword 'aaa'
+            keyAlias 'aaa'
+            keyPassword 'aaa'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+        debug {
+           
+            storePassword 'aaa'
+            keyAlias 'aaa'
+            keyPassword 'aaa'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.debug
+            debuggable true
+        }
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'LICENSE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/ASL2.0'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+
+    lintOptions {
+        quiet true
+        abortOnError false
+        ignoreWarnings true
+        disable 'InvalidPackage'            //Some libraries have issues with this.
+        disable 'OldTargetApi'
+        //Lint gives this warning but SDK 20 would be Android L Beta.
+        disable 'IconDensities'             //For testing purpose. This is safe to remove.
+        disable 'IconMissingDensityFolder'  //For testing purpose. This is safe to remove.
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+dependencies {
+    def presentationDependencies = rootProject.ext.presentationDependencies
+    def presentationTestDependencies = rootProject.ext.presentationTestDependencies
+
+    implementation project(':domain')
+    implementation project(':data')
+    implementation presentationDependencies.autofittextview
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    annotationProcessor presentationDependencies.daggerCompiler
+    implementation presentationDependencies.dagger
+    implementation presentationDependencies.appCompat
+    implementation presentationDependencies.design
+    implementation presentationDependencies.cardView
+    implementation presentationDependencies.butterKnife
+    annotationProcessor presentationDependencies.butterKnifeCompiler
+    implementation presentationDependencies.recyclerView
+    implementation presentationDependencies.glide
+    implementation presentationDependencies.rxJava
+    implementation presentationDependencies.rxAndroid
+    implementation presentationDependencies.javaxAnnotation
+    compileOnly presentationDependencies.javaxAnnotation
+    implementation presentationDependencies.mpAndroidChart
+
+    implementation gmsDependencies.gmsPlaces
+    implementation gmsDependencies.gmsLocation
+    implementation gmsDependencies.gmsMaps
+
+    implementation hmsDependencies.hmsMaps
+    implementation hmsDependencies.hmsLocation
+
+    androidTestImplementation presentationTestDependencies.mockito
+    androidTestImplementation presentationTestDependencies.dexmaker
+    androidTestImplementation presentationTestDependencies.dexmakerMockito
+    androidTestImplementation presentationTestDependencies.espresso
+    androidTestImplementation presentationTestDependencies.testingSupportLib
+
+    //Pay with visa
+    implementation(name: 'TrustDefender-5.0-96', ext: 'aar')
+    implementation(name: 'visanet-lib-release', ext: 'aar')
+
+    implementation visaDependencies.multidex
+    implementation visaDependencies.card
+    implementation visaDependencies.eyalbira
+    implementation visaDependencies.amitshekhar
+    implementation visaDependencies.squareup
+
+    //Tour guide in first activity
+    implementation ('com.github.worker8:tourguide:1.0.19-SNAPSHOT@aar') {
+        transitive=true
+    }
+}
+repositories {
+    google()
+    maven {
+        url 'https://jitpack.io'
+    }
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
